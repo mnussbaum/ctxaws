@@ -12,7 +12,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/dynamodb"
 	"golang.org/x/net/context"
 
-	"github.com/seiffert/ctxaws"
+	"github.com/mnussbaum/ctxaws"
 )
 
 func TestInContext_Success(t *testing.T) {
