@@ -23,6 +23,14 @@ import (
 // request, the send handler uses the x/net/context/ctxhttp package to do this while respecting the
 // context's deadline.
 func InContext(ctx context.Context, req *request.Request) error {
+	if err := prepareContext(ctx, req); err != nil {
+		return err
+	}
+
+	return req.Send()
+}
+
+func prepareContext(ctx context.Context, req *request.Request) error {
 	sendHandler := func(r *request.Request) {
 		var reStatusCode = regexp.MustCompile(`^(\d{3})`)
 		var err error
@@ -72,5 +80,6 @@ func InContext(ctx context.Context, req *request.Request) error {
 	req.Handlers.Send.Remove(corehandlers.SendHandler)
 	req.Handlers.Send.PushBack(sendHandler)
 	req.Retryer = NewContextAwareRetryer(ctx)
-	return req.Send()
+
+	return nil
 }

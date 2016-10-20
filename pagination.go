@@ -6,8 +6,9 @@ import (
 )
 
 func PaginateInContext(ctx context.Context, req *request.Request, handlePage func(interface{}, bool) bool) error {
-	if err := InContext(ctx, req); err != nil {
+	if err := prepareContext(ctx, req); err != nil {
 		return err
 	}
+
 	return req.EachPage(handlePage)
 }
