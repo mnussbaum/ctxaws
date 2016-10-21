@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/client"
 	"github.com/aws/aws-sdk-go/aws/request"
 	"golang.org/x/net/context"
 )
@@ -14,9 +13,10 @@ import (
 var ErrDeadlineWouldExceedBeforeRetry = errors.New("deadline would exceed before next retry")
 
 // NewContextAwareRetryer creates a Retryer that honors the given context's deadline.
-func NewContextAwareRetryer(ctx context.Context) *Retryer {
+func NewContextAwareRetryer(ctx context.Context, awsRetryer request.Retryer) *Retryer {
 	return &Retryer{
-		ctx: ctx,
+		Retryer: awsRetryer,
+		ctx:     ctx,
 	}
 }
 
@@ -25,8 +25,7 @@ func NewContextAwareRetryer(ctx context.Context) *Retryer {
 // not to retry requests when the context would expire while waiting for the next try. Also requests
 // won't be retried when the context already has expired.
 type Retryer struct {
-	client.DefaultRetryer
-
+	request.Retryer
 	ctx context.Context
 }
 
@@ -46,5 +45,5 @@ func (r *Retryer) ShouldRetry(req *request.Request) bool {
 		}
 	}
 
-	return r.DefaultRetryer.ShouldRetry(req)
+	return r.Retryer.ShouldRetry(req)
 }

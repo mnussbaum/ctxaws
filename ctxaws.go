@@ -79,7 +79,7 @@ func prepareContext(ctx context.Context, req *request.Request) error {
 
 	req.Handlers.Send.Remove(corehandlers.SendHandler)
 	req.Handlers.Send.PushBack(sendHandler)
-	req.Retryer = NewContextAwareRetryer(ctx)
+	req.Retryer = NewContextAwareRetryer(ctx, req.Retryer)
 
 	return nil
 }
